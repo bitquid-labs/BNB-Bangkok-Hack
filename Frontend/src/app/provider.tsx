@@ -1,38 +1,40 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { WagmiProvider } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CoverProvider } from "@/contexts/CoverContext"
-import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { ClaimProvider } from "@/contexts/ClaimContext"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as React from 'react';
+import { WagmiProvider } from 'wagmi';
+
+import { config } from '@/lib/config';
 import { metadata, projectId } from '@/lib/wagmi';
-import { config } from "@/lib/config"
 
-const queryClient = new QueryClient()
+import WithSession from '@/components/withSession';
+
+import { ClaimProvider } from '@/contexts/ClaimContext';
+import { CoverProvider } from '@/contexts/CoverContext';
+
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const queryClient = new QueryClient();
 
 if (!projectId) throw new Error('Project ID is not defined');
 
-// Create modal
-createWeb3Modal({
-  metadata,
-  wagmiConfig: config,
-  projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-});
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => setMounted(true), [])
+function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
   return (
     <WagmiProvider config={config}>
       <CoverProvider>
         <ClaimProvider>
           <QueryClientProvider client={queryClient}>
-            {mounted && children}
+            <RainbowKitProvider theme={darkTheme()}>
+              {/* Your App */}
+              {mounted && children}
+            </RainbowKitProvider>
           </QueryClientProvider>
         </ClaimProvider>
       </CoverProvider>
     </WagmiProvider>
-  )
+  );
 }
+
+export default WithSession(Providers);

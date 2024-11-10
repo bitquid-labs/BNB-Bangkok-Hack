@@ -1,26 +1,21 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { cn, convertStakeTypeData, convertTvl } from '@/lib/utils';
+import { cn, convertStakeTypeData } from '@/lib/utils';
 import Button from '@/components/button/button';
 import LeftArrowIcon from '~/svg/left-arrow.svg';
 
-import {
-  useReadContracts,
-  useChainId,
-  useAccount,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from 'wagmi';
-import {
-  MyStackDetail,
-  tempMyStacks,
-  StakeType,
-} from '@/screen/stake/constants';
-import { MockERC20Contract } from '@/constant/contracts';
+import { useAccount } from 'wagmi';
+import { MyStackDetail, StakeType } from '@/screen/stake/constants';
 import { useAllInsurancePools } from '@/hooks/contracts/pool/useAllInsurancePools';
+import DepositModal from './deposit';
+import { BQBTC } from '@/constant/config';
 
 export type InsurancePoolType = {
   poolName: string;
+  poolId: Number;
+  dailyPayout: string;
+  depositAmount: string;
+  accruedPayout: string;
   apy: number;
   minPeriod: number;
   acceptedToken: string;
@@ -30,37 +25,18 @@ export type InsurancePoolType = {
 };
 
 export const StakeScreen = (): JSX.Element => {
-  const chainId = useChainId();
-
-  const { address, isConnected } = useAccount();
-
-  const [myStacks, setMyStacks] = useState<StakeType[]>([]);
-
+  const { chain } = useAccount();
   const insurancePools = useAllInsurancePools();
-  const { data: hash, isPending, writeContract } = useWriteContract();
-
-  const handleWriteContract = (
-    poolId: number,
-    amount: string,
-    day: number
-  ): void => {
-    console.log('wallet address is: ', `${address}`);
-
-    writeContract({
-      ...MockERC20Contract,
-      functionName: 'approve',
-      args: [`${address}`, BigInt(amount)],
-    });
-  };
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
+  const [myStacks, setMyStacks] = useState<StakeType[]>([]);
 
   useEffect(() => {
     if (insurancePools) {
-      setMyStacks(convertStakeTypeData(insurancePools as InsurancePoolType[]));
+      setMyStacks(
+        convertStakeTypeData(
+          insurancePools as InsurancePoolType[],
+          BQBTC.symbol
+        )
+      );
     }
   }, [insurancePools]);
 
@@ -70,11 +46,11 @@ export const StakeScreen = (): JSX.Element => {
         <div className='text-[40px] font-bold leading-[50px]'>
           Stake Idle Assets To Secure And Earn
         </div>
-        <div className='flex w-full flex-col gap-6'>
+        <div className='flex w-full flex-col gap-5'>
           {myStacks.map((stack, index) => (
             <div
               key={index}
-              className='bg-background-100 flex w-full gap-5 rounded-[15px] p-4'
+              className='flex w-full gap-[30px] rounded bg-[#1E1E1E] px-[60px] py-[25px]'
             >
               {Object.keys(stack).map((key, i) => (
                 <div
@@ -86,8 +62,7 @@ export const StakeScreen = (): JSX.Element => {
                 >
                   <div
                     className={cn(
-                      'w-full rounded-full px-5 py-3 text-center',
-                      'bg-[#0699D8]'
+                      'flex h-10 w-full items-center justify-center rounded border border-white/10 bg-white/5 px-5 text-sm'
                     )}
                   >
                     {MyStackDetail[key as keyof typeof MyStackDetail]}
@@ -97,21 +72,20 @@ export const StakeScreen = (): JSX.Element => {
                   </div>
                 </div>
               ))}
-              <div className='flex w-full flex-col items-center gap-6'>
-                <div className='w-full rounded-full bg-gradient-to-t from-teal-400 to-blue-500 px-5 py-3 text-center hover:from-pink-500 hover:to-orange-500'>
+              <div className='flex w-full flex-col items-center gap-[15px]'>
+                <DepositModal
+                  index={index + 1}
+                  currency={stack.currency}
+                  tenure={stack.tenure}
+                />
+                <div className='flex h-10 w-full items-center justify-center rounded bg-white px-5 py-[11px]'>
                   <Link
                     href={`/pool/${stack.currency}/${index + 1}`}
-                    className='font-semibold underline-offset-4'
+                    className='font-semibold text-[black]'
                   >
-                    Stake Now
+                    Details
                   </Link>
                 </div>
-                <Link
-                  href={`/pool/${stack.currency}/${index + 1}`}
-                  className='font-semibold underline underline-offset-4'
-                >
-                  Details
-                </Link>
               </div>
             </div>
           ))}
@@ -121,15 +95,21 @@ export const StakeScreen = (): JSX.Element => {
             <div className='text-2xl font-semibold'>
               Looking for custom solutions for your business
             </div>
-            <Button variant='gradient-outline' size='lg'>
-              Reach out to us
-            </Button>
+            <a href='https://discord.gg/QU4YUgJMJJ'>
+              <Button
+                variant='primary'
+                size='lg'
+                className='rounded-[10px] bg-none text-[#00ECBC] outline outline-[#00ECBC]'
+              >
+                Reach out to us
+              </Button>
+            </a>
           </div>
           <div className='flex items-center gap-8'>
-            <div className='bg-background-100 flex h-[60px] w-[60px] cursor-pointer items-center justify-center rounded-full hover:bg-white/30 active:scale-95'>
+            <div className='flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full border border-white bg-transparent hover:bg-white/30 active:scale-95'>
               <LeftArrowIcon className='h-[13px] w-[23px]' />
             </div>
-            <div className='bg-background-100 flex h-[60px] w-[60px] cursor-pointer items-center justify-center rounded-full hover:bg-white/30 active:scale-95'>
+            <div className='flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full border border-white bg-transparent hover:bg-white/30 active:scale-95'>
               <LeftArrowIcon className='h-[13px] w-[23px] rotate-180' />
             </div>
           </div>

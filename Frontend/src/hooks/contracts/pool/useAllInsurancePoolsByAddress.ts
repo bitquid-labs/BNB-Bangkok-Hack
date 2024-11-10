@@ -1,22 +1,25 @@
 import { useEffect } from 'react';
-import {useBlockNumber, useReadContract} from 'wagmi';
-import { InsurancePoolContract } from "@/constant/contracts";
-import { InsurancePoolType } from "@/types/main";
+import { useAccount, useBlockNumber, useReadContract } from 'wagmi';
+import { InsurancePoolContract } from '@/constant/contracts';
+import { InsurancePoolType } from '@/types/main';
+import { ChainType } from '@/lib/wagmi';
 
 export const useAllInsurancePoolsByAddress = (address: string) => {
-  const {data: blockNumber} = useBlockNumber({watch: true});
-  const {data: insurancePools, refetch} = useReadContract({
+  const { chain } = useAccount();
+  const { data: blockNumber } = useBlockNumber();
+  const { data: insurancePools, refetch } = useReadContract({
     abi: InsurancePoolContract.abi,
-    address: InsurancePoolContract.address as `0x${string}`,
+    address:
+      InsurancePoolContract.addresses[(chain as ChainType)?.chainNickName],
     functionName: 'getPoolsByAddress',
     args: [address],
-  })
+  });
 
   useEffect(() => {
     refetch();
   }, [blockNumber]);
 
-  console.log("insurancePools", insurancePools);
+  console.log('insurancePools for mystake : ', insurancePools);
   if (!insurancePools) return [];
 
   try {
@@ -24,8 +27,6 @@ export const useAllInsurancePoolsByAddress = (address: string) => {
     if (!result) return [];
 
     return result;
-
-
   } catch (error) {
     return [];
   }

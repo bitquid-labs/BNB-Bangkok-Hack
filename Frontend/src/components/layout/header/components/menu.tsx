@@ -12,7 +12,7 @@ import DropdownColorIcon from '~/svg/dropdown-color.svg';
 
 export const Menu = (): JSX.Element => {
   return (
-    <div className='hidden items-center gap-10 lg:flex'>
+    <div className='hidden gap-[45px] lg:flex'>
       {Menus.map((menu, index) => (
         <MenuItem key={index} {...menu} />
       ))}
@@ -35,15 +35,13 @@ const MenuItem = ({ label, href, subMenus }: MenuType) => {
   );
 
   return (
-    <div className={cn('group relative')}>
+    <div className={cn('group relative flex flex-auto')}>
       <div
         className={cn(
-          'font-primary relative flex cursor-pointer items-center gap-2 px-4 text-[16px] leading-[20px]',
-          isSelected
-            ? 'from-primary-200 to-primary-100 bg-gradient-to-t bg-clip-text pb-2 text-transparent'
-            : 'text-light group-hover:from-primary-200 group-hover:to-primary-100 py-1 group-hover:bg-gradient-to-t group-hover:bg-clip-text group-hover:text-transparent',
+          'font-primary relative flex h-full cursor-pointer items-center gap-2 whitespace-nowrap text-[16px]',
+          isSelected ? 'text-primary-200' : 'group-hover:text-primary-200 py-1',
           isSelected &&
-            'after:content-[" "] after:from-primary-200 after:to-primary-100 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-t'
+            'after:content-[" "] after:bg-primary-200 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1'
         )}
         onClick={() => handleLink(href)}
       >

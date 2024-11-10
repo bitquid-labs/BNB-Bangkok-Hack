@@ -1,126 +1,148 @@
-import React, { useEffect, useState } from 'react';
-
-import Button from '@/components/button/button';
-import Input from '@/components/input';
-
-import { StakeType } from '@/screen/stake/constants';
-
-import { useReadContracts, useWriteContract, useAccount, useBalance, useWaitForTransactionReceipt, useConnect } from 'wagmi';
-import { InsurancePoolContract, MockERC20Contract } from '@/constant/contracts';
-import { InsurancePoolType } from '@/types/main';
 import { parseUnits } from 'ethers';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { convertAmount, convertTvl } from '@/lib/utils';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import {
+  useAccount,
+  useBalance,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
+
+import { cn, convertAmount } from '@/lib/utils';
+
+import { InsurancePoolContract } from '@/constant/contracts';
+import { StakeType } from '@/screen/stake/constants';
+import Button from '@/components/button/button';
+import { ChainType } from '@/lib/wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useGetBalanceOfBQBTC } from '@/hooks/contracts/pool/useGetBalanceOfBQBTC';
+import { BQBTC } from '@/constant/config';
 
 type CurrencyProps = {
   pool: StakeType | undefined;
 };
 
 export const Currency = ({ pool }: CurrencyProps): JSX.Element => {
+  const { openConnectModal } = useConnectModal();
 
-  const [amount, setAmount] = useState<string>('1');
+  const [amount, setAmount] = useState<string | undefined>('');
   const [period, setPeriod] = useState<number>(30);
-  const { open, close } = useWeb3Modal();
+  const bqBTCBalance = Number(useGetBalanceOfBQBTC()) / 10 ** 18;
 
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { data: balance } = useBalance({ address });
 
   const {
     data: hash,
     isPending,
-    writeContractAsync
+    writeContractAsync,
   } = useWriteContract({
     mutation: {
-      async onSuccess(data) {
-        console.log(1)        
+      async onSuccess() {
+        console.log(1);
       },
-      onError(error) {
-        console.log(1, error)   
-      }
-    }
+      onError(error: any) {
+        console.log(1, error);
+      },
+    },
   });
 
-  const handleDepositContract = async (poolId: string, day: number) => {
-    console.log("Deposit is ", InsurancePoolContract, BigInt(poolId), BigInt(day.toString()));
+  const handleDepositContract = async (
+    poolId: string,
+    amount: string | undefined
+  ) => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first!');
+      return;
+    }
     const realAmount = convertAmount(amount);
-    const params = [
-      Number(poolId),
-      Number(day)
-    ];
 
-    console.log("params ", params)
-    console.log("Balance: ", balance, "AMOUNT: ", realAmount);
+    if (amount === undefined) {
+      toast.error('Amount should be bigger than 0!');
+      return;
+    }
+    const params = [Number(poolId), parseUnits(amount.toString(), 18)];
 
     try {
       const tx = await writeContractAsync({
         abi: InsurancePoolContract.abi,
-        address: InsurancePoolContract.address as `0x${string}`,
+        address:
+          InsurancePoolContract.addresses[(chain as ChainType)?.chainNickName],
         functionName: 'deposit',
         args: params,
-        value: parseUnits((amount).toString(), 18)
+        // value: parseUnits(amount.toString(), 18),
       });
-      toast.success("Deposit Success!");
+      toast.success('Deposit Success!');
     } catch (err) {
-      let errorMsg = "";
+      let errorMsg = '';
       if (err instanceof Error) {
-        if (err.message.includes("User denied transaction signature")) {
-          errorMsg = "User denied transaction signature";
+        if (err.message.includes('User denied transaction signature')) {
+          errorMsg = 'User denied transaction signature';
+        } else {
+          errorMsg = 'Input a valid stake amount!';
         }
       }
       toast.error(errorMsg);
     }
-  }
+  };
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  })
-
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
 
   return (
-    <div className='flex w-full flex-col gap-10'>
-      <div className='text-[40px] font-bold leading-[50px]'>
-        {`Deposit Currency - BTCP`}
+    <div className='flex flex-1 flex-col gap-4 rounded-sm bg-[#1E1E1E] p-[15px]'>
+      <div className='flex items-center gap-[22px]'>
+        <div className='w-fit min-w-[200px] text-[30px] font-bold'>
+          Deposit Currency - {BQBTC.symbol}
+        </div>
+        <div className='h-[1px] flex-1 bg-white/50'></div>
       </div>
-      <div className='bg-background-100 flex flex-auto flex-col gap-4 rounded-[15px] p-5'>
-        <div className='text-2xl font-bold'>Pool Details:</div>
-        <div className='flex flex-col gap-6'>
-          <div className='flex items-center gap-6'>
-            <Input
-              className='border-border-200 border px-6'
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <button
-              className='min-w-[100px]'
-              onClick={() => setAmount(convertTvl(Number(balance?.value)).toString())}
-            >
-              Max
-            </button>
-          </div>
-          <div className='grid grid-cols-3 gap-11'>
-            <Button variant={ period === 90 ? 'primary' : 'outline'} size='lg' className='w-full' onClick={() => setPeriod(90)}>
-              3 months
-            </Button>
-            <Button variant={ period === 180 ? 'primary' : 'outline'} size='lg' className='w-full' onClick={() => setPeriod(180)}>
-              6 months
-            </Button>
-            <Button variant={ period === 365 ? 'primary' : 'outline'} size='lg' className='w-full' onClick={() => setPeriod(365)}>
-              1 year
-            </Button>
-          </div>
-          <div className='mb-2 mt-4 flex justify-center'>
-            {/* <Button variant='primary' size='lg' className='min-w-[216px] mr-6' onClick={() => handleApproveTokenContract(amount)}>
-              Approve Token
-            </Button> */}
-            <Button variant='primary' size='lg' className='min-w-[216px]'
-              // disabled={!isConfirmed}
-              onClick={async () => isConnected ? await handleDepositContract(pool?.poolId ? pool?.poolId : '1', period) : open()}
-            >
-              {isConnected ? 'Deposit BTCP' : 'Connect Wallet'}
-            </Button>
+      <div className='relative flex flex-col gap-4 rounded border border-white/10 bg-[#373737] px-12 py-[34px]'>
+        <div className='text-[20px] font-bold'>Pool Details:</div>
+        <div className='flex h-auto rounded border border-[#6D6D6D] px-1 py-[5px]'>
+          <input
+            className={cn(
+              'placeholder:text-light/50 min-w-0 flex-auto border-none bg-transparent p-0 focus:border-none focus:outline-none focus:outline-offset-0 focus:ring-0'
+            )}
+            value={amount || ''}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <div
+            className='h-[36px] min-w-[86px] cursor-pointer rounded-[10px] bg-[#131313] px-[13px] py-[6px] text-center text-[15px] leading-[24px] text-white'
+            onClick={() => setAmount(String(bqBTCBalance))}
+          >
+            Max
           </div>
         </div>
+        <div className='w-fit rounded bg-gradient-to-r from-[#00ECBC] to-[#005746] px-[18px] py-[9px]'>
+          {pool?.tenure}
+        </div>
+      </div>
+      <div className='flex justify-center py-[27px]'>
+        {!openConnectModal ? (
+          <Button
+            variant='gradient'
+            className='w-fit min-w-[183px] rounded bg-gradient-to-r from-[#00ECBC] to-[#005746] px-5 py-3 text-center'
+            onClick={async () =>
+              await handleDepositContract(
+                pool?.poolId ? pool?.poolId : '1',
+                amount
+              )
+            }
+          >
+            Deposit {BQBTC.symbol}
+          </Button>
+        ) : (
+          <Button
+            variant='gradient'
+            className='w-fit min-w-[183px] rounded bg-gradient-to-r from-[#00ECBC] to-[#005746] px-5 py-3 text-center'
+            onClick={openConnectModal}
+          >
+            Connect Wallet
+          </Button>
+        )}
       </div>
     </div>
   );

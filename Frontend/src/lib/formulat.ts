@@ -1,9 +1,10 @@
 import { COVER_FEE_RATE } from "@/constant/config";
 import { formatUnits, parseUnits } from "viem";
 import { RiskType, riskTypeNames } from "@/types/main";
+import { TERMSANDCONDITIONS } from "@/constant/tooltip";
 
-export const calculateCoverFee = (coverAmount: number, coverPeriod: number) => {
-  return coverAmount * COVER_FEE_RATE * coverPeriod / 365;
+export const calculateCoverFee = (coverAmount: number, annualRate: number, coverPeriod: number) => {
+  return coverAmount * annualRate * coverPeriod / (365 * 100);
 }
 
 
@@ -13,13 +14,13 @@ export function numberToBN(value: number | string, unit: number = 18) {
 }
 
 export function bnToNumber(value: bigint | undefined, decimals: number = 18) {
-  if (!value) return '0';
-  return formatUnits(value, decimals);
+  if (!value) return 0;
+  return parseFloat(formatUnits(value, decimals));
 }
 
 
 export function UNIXToDate(timestamp: bigint) {
-  return new Date(Number(timestamp) * 1000); 
+  return new Date(Number(timestamp) * 1000);
 }
 
 
@@ -35,4 +36,20 @@ export function formatDate(date: Date): string {
 export function getRiskTypeName(value: number | undefined): string | undefined {
   if (value === undefined) return '';
   return riskTypeNames[value] as string | undefined;
+}
+
+export function termsByRiskType(riskType: RiskType | undefined) {
+  if (riskType === undefined) return
+  [
+    {
+      title: "",
+      content: [
+        "",
+        "",
+      ]
+    }
+  ]
+
+
+  return TERMSANDCONDITIONS[riskType];
 }

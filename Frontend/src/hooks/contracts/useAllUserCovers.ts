@@ -1,20 +1,20 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
-import { ICoverContract } from "@/constant/contracts";
+import { ICoverContract } from '@/constant/contracts';
 
-import {useBlockNumber, useReadContract} from 'wagmi';
-import { IUserCover } from "@/types/main";
+import { useAccount, useBlockNumber, useReadContract } from 'wagmi';
+import { IUserCover } from '@/types/main';
+import { ChainType } from '@/lib/wagmi';
 
 export const useAllUserCovers = (address: string) => {
-  const {data: blockNumber} = useBlockNumber({watch: true});
-  const {data: userCovers, refetch} = useReadContract({
+  const { chain } = useAccount();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: userCovers, refetch } = useReadContract({
     abi: ICoverContract.abi,
-    address: ICoverContract.address as `0x${string}`,
+    address: ICoverContract.addresses[(chain as ChainType)?.chainNickName],
     functionName: 'getAllUserCovers',
     args: [address],
-  })
-
-  console.log('raw user:', userCovers)
+  });
 
   useEffect(() => {
     refetch();
@@ -27,8 +27,6 @@ export const useAllUserCovers = (address: string) => {
     if (!result) return [];
 
     return result;
-
-
   } catch (error) {
     return [];
   }

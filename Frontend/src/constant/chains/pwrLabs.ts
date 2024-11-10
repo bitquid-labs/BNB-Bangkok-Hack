@@ -1,15 +1,19 @@
-import { defineChain } from 'viem'
+import { defineChain } from 'viem';
 
-export const pwrlabs = defineChain({
+import { ChainType } from '@/lib/wagmi';
+
+export const pwrlabs: ChainType = defineChain({
   id: 21000001,
+  chainNickName: 'pwr',
+  faucet: 'https://faucet.pwrlabs.io/',
   name: 'BTC+ Network',
-  nativeCurrency: { name: 'BTC', symbol: 'BTC', decimals: 8 },
+  logo: '/images/pwr.png',
+  nativeCurrency: { name: 'BTCP', symbol: 'BTCP', decimals: 8 },
   rpcUrls: {
     default: { http: ['https://bitcoinplus.pwrlabs.io/'] },
   },
   blockExplorers: {
     default: { name: 'Etherscan', url: 'https://btcplusexplorer.pwrlabs.io/' },
   },
-  contracts: {
-  },
-})
+  contracts: {},
+});

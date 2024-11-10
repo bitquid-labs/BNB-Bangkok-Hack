@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { ClaimScreen } from "@/screen/claim";
+import { ClaimScreen } from '@/screen/claim';
 import { useSearchParams } from 'next/navigation';
 
 export const DefaultClientPage = (): JSX.Element => {

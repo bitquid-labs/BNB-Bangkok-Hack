@@ -12,16 +12,16 @@ export const Link = (): JSX.Element => {
       <a href='https://www.linkedin.com/company/bq-labs' target='blank'>
         <Linkedin className='h-8 w-8' />
       </a>
-      <a href='https://discord.gg/wrFmetGCa7' target='blank'>
+      <a href='https://discord.gg/QU4YUgJMJJ' target='blank'>
         <Discord className='h-8 w-8' />
       </a>
       <a href='https://t.me/+xj1JDLHhA8VhZjJl'>
         <Telegram className='h-8 w-8' />
       </a>
-      <a href='' target='blank'>
+      <a href='https://medium.com/@bqlabssocials' target='blank'>
         <Medium className='h-8 w-8' />
       </a>
-      <a href='https://twitter.com/bitquidlabs' target='blank'>
+      <a href='https://x.com/BQ_Labs' target='blank'>
         <Twitter className='h-8 w-8' />
       </a>
     </div>

@@ -38,10 +38,14 @@
 }
 
 .react-datepicker__input-container input {
-  background-color: #333; /* Primary color */
-  border: 1px solid #ffffff26; /* Secondary color for input border */
+  background-color: transparent; /* Primary color */
+  border: none;
+  padding: 0px;
   color: #fff; /* White text */
-  padding: 8px;
-  border-radius: 100px;
-  width: 140px; /* Set width here */
+}
+.react-datepicker__input-container input:focus {
+  border: none;
+  outline: none;
+  outline-offset: 0px;
+  box-shadow: none;
 }

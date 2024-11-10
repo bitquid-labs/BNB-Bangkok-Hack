@@ -15,12 +15,12 @@ export const filters = [
   },
   {
     index: 2,
-    riskType: 'protocol risks'
+    riskType: 'stable coin'
   },
   {
     index: 3,
-    riskType: 'stable coin'
-  }
+    riskType: 'protocol risks'
+  },
 ];
 
 export const riskTypes = [

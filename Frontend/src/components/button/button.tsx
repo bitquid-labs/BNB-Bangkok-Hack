@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 export const ButtonVariant = [
   'primary',
   'gradient-outline',
+  'gradient',
   'default',
   'outline',
 ] as const;
@@ -67,25 +68,25 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <div
         className={cn(
-          'relative',
+          'relative flex',
           'transition-all',
-          'active:scale-95',
-          variant === 'gradient-outline' &&
-          'overflow-hidden rounded-full p-[1px]'
+          'active:scale-100',
+          variant === 'gradient-outline' && 'overflow-hidden rounded p-[1px]'
         )}
       >
         {variant === 'gradient-outline' && (
-          <div className='from-primary-200 to-primary-100 absolute inset-0 bg-gradient-to-t'></div>
+          <div className='from-primary-200 to-primary-200 absolute inset-0 bg-gradient-to-t'></div>
         )}
         <button
           ref={ref}
           type='button'
           disabled={disabled}
           className={cn(
-            'box-border inline-flex items-center rounded-full flex items-center',
+            'box-border flex items-center',
             'focus-visible:ring-primary-100 focus:outline-none focus-visible:ring',
             'transition-all',
             'justify-center text-center',
+            'rounded',
             [
               size === 'xl' && [
                 'px-8 py-5',
@@ -105,9 +106,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             ],
             [
               variant === 'primary' && [
-                'text-light from-primary-200 to-primary-100 bg-gradient-to-t',
+                'text-light from-gray-200 to-gray-100 bg-gradient-to-t',
               ],
               variant === 'gradient-outline' && ['bg-dark relative z-10'],
+              variant === 'gradient' && [
+                'from-primary-200 to-primary-300 relative z-10 bg-gradient-to-r',
+              ],
               variant === 'default' && [
                 'text-light bg-background-100 border border-transparent',
               ],
@@ -117,7 +121,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             ],
             'disabled:cursor-not-allowed',
             isLoading &&
-            'relative transition-none disabled:cursor-wait opacity-[0.7]',
+            'relative opacity-[0.7] transition-none disabled:cursor-wait',
             className
           )}
           {...rest}
@@ -129,7 +133,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               classNames?.leftIcon
             )}
           {variant === 'gradient-outline' ? (
-            <div className='from-primary-200 to-primary-100 bg-gradient-to-t bg-clip-text text-transparent'>
+            <div className='from-primary-200 to-primary-200 bg-gradient-to-t bg-clip-text text-transparent'>
               {children}
             </div>
           ) : (
@@ -155,7 +159,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               <ImSpinner2 className='animate-spin' />
             </div>
           )}
-
         </button>
       </div>
     );

@@ -1,10 +1,11 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
-import { GovContract } from "@/constant/contracts";
+import { GovContract } from '@/constant/contracts';
 
-import {useBlockNumber, useReadContract} from 'wagmi';
-import { ICover, RiskType } from "@/types/main";
-import { bnToNumber } from "@/lib/formulat";
+import { useAccount, useBlockNumber, useReadContract } from 'wagmi';
+import { ICover, RiskType } from '@/types/main';
+import { bnToNumber } from '@/lib/formulat';
+import { ChainType } from '@/lib/wagmi';
 
 // type CoverType = [
 //   bigint,
@@ -19,15 +20,14 @@ import { bnToNumber } from "@/lib/formulat";
 // ]
 
 export const useProposalById = (proposalId: number) => {
-  const {data: blockNumber} = useBlockNumber({watch: true});
-  const {data: proposal, refetch} = useReadContract({
+  const { chain } = useAccount();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: proposal, refetch } = useReadContract({
     abi: GovContract.abi,
-    address: GovContract.address as `0x${string}`,
+    address: GovContract.addresses[(chain as ChainType)?.chainNickName],
     functionName: 'proposals',
     args: [proposalId],
-  })
-
-  console.log('raw proposal info:', proposal)
+  });
 
   useEffect(() => {
     refetch();
@@ -52,7 +52,6 @@ export const useProposalById = (proposalId: number) => {
   //     poolId: Number(result[7]),
   //     CID: result[8],
   //   };
-
 
   // } catch (error) {
   //   return undefined;

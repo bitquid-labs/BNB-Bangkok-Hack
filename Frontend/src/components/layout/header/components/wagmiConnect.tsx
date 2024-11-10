@@ -1,12 +1,26 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
+import Image from 'next/image';
 import React from 'react';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
+
+import { chains } from '@/lib/wagmi';
 
 import Button from '@/components/button/button';
 
-export const ConnectButton = (): JSX.Element => {
-  const { open, close } = useWeb3Modal();
-  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+import PlusIcon from '~/svg/plus.svg';
+
+import {
+  ConnectButton,
+  useAccountModal,
+  useChainModal,
+  useConnectModal,
+} from '@rainbow-me/rainbowkit';
+
+export const ConnectWalletButton = (): JSX.Element => {
+  const { openChainModal } = useChainModal();
+  const { openAccountModal } = useAccountModal();
+  const { openConnectModal } = useConnectModal();
+
+  const { chain, address, isConnected } = useAccount();
   const { disconnectAsync } = useDisconnect();
 
   const handleDisconnect = async () => {
@@ -26,17 +40,34 @@ export const ConnectButton = (): JSX.Element => {
   return (
     <div>
       {isConnected && address ? (
-        <Button
-          variant='gradient-outline'
-          size='xl'
-          className='bg-background-100'
-          // onClick={close}
-          onClick={async () => handleDisconnect()}
-        >
-          {truncateAddress(address)}
-        </Button>
+        <div className='flex items-center gap-2'>
+          <button
+            className='bg-primary-200 flex h-[46px] w-[46px] items-center justify-center rounded-md p-1'
+            onClick={openChainModal}
+          >
+            <Image
+              src={chains.find((c) => c.id === chain?.id)?.logo ?? ''}
+              alt='chain'
+              width={24}
+              height={24}
+            />
+          </button>
+          <Button variant='gradient' size='lg' onClick={openAccountModal}>
+            {truncateAddress(address)}
+          </Button>
+          {/* <ConnectButton /> */}
+        </div>
       ) : (
-        <Button variant='primary' size='xl' onClick={() => open()}>
+        <Button
+          variant='gradient'
+          leftIcon={<PlusIcon />}
+          classNames={{
+            leftIcon:
+              'w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center',
+          }}
+          size='lg'
+          onClick={openConnectModal}
+        >
           Connect Wallet
         </Button>
       )}

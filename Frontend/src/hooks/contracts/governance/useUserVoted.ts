@@ -1,16 +1,18 @@
 import { useEffect } from 'react';
-import {useBlockNumber, useReadContract} from 'wagmi';
-import { ProposalType } from "@/types/main";
-import { GovContract } from "@/constant/contracts";
+import { useAccount, useBlockNumber, useReadContract } from 'wagmi';
+import { ProposalType } from '@/types/main';
+import { GovContract } from '@/constant/contracts';
+import { ChainType } from '@/lib/wagmi';
 
 export const useUserVoted = (proposalId: number, user: string) => {
-  const {data: blockNumber} = useBlockNumber({watch: true});
-  const {data: proposals, refetch} = useReadContract({
+  const { chain } = useAccount();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: proposals, refetch } = useReadContract({
     abi: GovContract.abi,
-    address: GovContract.address as `0x${string}`,
+    address: GovContract.addresses[(chain as ChainType)?.chainNickName],
     functionName: 'getUserVoted',
     args: [proposalId, user],
-  })
+  });
 
   useEffect(() => {
     refetch();
@@ -22,8 +24,6 @@ export const useUserVoted = (proposalId: number, user: string) => {
     if (!result) return [];
 
     return result;
-
-
   } catch (error) {
     return [];
   }

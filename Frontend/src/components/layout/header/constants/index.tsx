@@ -22,7 +22,7 @@ export const Menus: MenuType[] = [
     ],
   },
   {
-    label: 'Stake',
+    label: 'Pools',
     subMenus: [
       {
         label: 'Stake',

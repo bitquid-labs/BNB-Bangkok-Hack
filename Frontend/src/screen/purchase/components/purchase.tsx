@@ -4,9 +4,15 @@ import { List } from '@/screen/purchase/components/list';
 import { Search } from '@/screen/purchase/components/search';
 import { useAllAvailableCovers } from "@/hooks/contracts/useAllAvailableCovers";
 import { RiskType } from "@/types/main";
+import { useAccount } from "wagmi";
+import { useAllUserCovers } from "@/hooks/contracts/useAllUserCovers";
 
 export const PurchaseScreen = (): JSX.Element => {
+  const { address } = useAccount();
   const availableCovers = useAllAvailableCovers();
+
+  const userCovers = useAllUserCovers(address as string);
+  const userCoverIds = useMemo(() => userCovers.map((cover) => cover.coverId), [userCovers]);
 
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<RiskType | undefined>(undefined);
@@ -30,8 +36,6 @@ export const PurchaseScreen = (): JSX.Element => {
     });
   }, [availableCovers, searchKeyword, filterCategory]);
 
-  console.log('filtered:', filteredCovers)
-  
   return (
     <section className='flex h-full flex-auto flex-col'>
       <div className='layout flex flex-auto flex-col items-center gap-10 p-10'>
@@ -43,6 +47,7 @@ export const PurchaseScreen = (): JSX.Element => {
         />
         <List
           covers={filteredCovers}
+          userCoverIds={userCoverIds}
         />
       </div>
     </section>

@@ -1,16 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/navigation'
-import RectButton from '@/components/button/rectButton';
-
-type ProductType = {
-  name: string | undefined,
-  isSelected: boolean;
-  coverId: string |number;
-}
+import RectButton from '@/components/button/rectButton'
+import { IProduct } from "@/types/main";
 
 
 type CoversType = {
-  products: ProductType[]
+  products: IProduct[]
 }
 
 export const Covers = (props: CoversType): JSX.Element => {

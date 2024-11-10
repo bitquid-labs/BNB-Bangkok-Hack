@@ -1,10 +1,11 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
-import { ICoverContract } from "@/constant/contracts";
+import { ICoverContract } from '@/constant/contracts';
 
-import {useBlockNumber, useReadContract} from 'wagmi';
-import { ICover, RiskType } from "@/types/main";
-import { bnToNumber } from "@/lib/formulat";
+import { useAccount, useBlockNumber, useReadContract } from 'wagmi';
+import { ICover, RiskType } from '@/types/main';
+import { bnToNumber } from '@/lib/formulat';
+import { ChainType } from '@/lib/wagmi';
 
 type CoverType = [
   bigint,
@@ -17,19 +18,18 @@ type CoverType = [
   bigint,
   bigint,
   bigint,
-  string,
-]
+  string
+];
 
 export const useCoverInfo = (coverId: number) => {
-  const {data: blockNumber} = useBlockNumber({watch: true});
-  const {data: userCover, refetch} = useReadContract({
+  const { chain } = useAccount();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: userCover, refetch } = useReadContract({
     abi: ICoverContract.abi,
-    address: ICoverContract.address as `0x${string}`,
+    address: ICoverContract.addresses[(chain as ChainType)?.chainNickName],
     functionName: 'covers',
     args: [coverId],
-  })
-
-  console.log('raw cover info:', userCover)
+  });
 
   useEffect(() => {
     refetch();
@@ -54,8 +54,6 @@ export const useCoverInfo = (coverId: number) => {
       poolId: Number(result[9]),
       CID: result[10],
     };
-
-
   } catch (error) {
     return undefined;
   }
