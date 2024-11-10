@@ -1,0 +1,105 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ICover",
+  "sourceName": "contracts/Gov.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_coverId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getUserCoverInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "coverId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum CoverLib.RiskType",
+              "name": "riskType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "coverName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "coverValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "claimPaid",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "coverPeriod",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endDay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct CoverLib.GenericCoverInfo",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_coverId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_claimPaid",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateUserCoverValue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
