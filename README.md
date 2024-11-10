@@ -1,4 +1,4 @@
-# BQ Labs - Bitcoin Risk Management Layer
+# BQ Labs - Bitcoin Risk Economy Layer
 
 ## Overview
 
@@ -26,6 +26,8 @@ The BQ Protocol is structured around three primary user roles, each interacting 
 
 ## Core Features
 
+**Users need to deposit tBNB or BTC from BSC testnet in order to get bqBTC ( native version of BTC on BSC testnet ) which is utilized as a unified asset for Cover purchase, Depositing into underwriting pools and claim payout.**
+
 1. **Purchase Cover:**  
    Users can browse through a selection of risks, select a coverage tenure and amount, and secure their BTCFi position. This feature is fully integrated with non-custodial wallets, enabling seamless transactions.
 
@@ -46,7 +48,7 @@ The BQ Protocol is structured around three primary user roles, each interacting 
 - **Smart Contracts:** Developed using Solidity, with a focus on security, efficiency, and scalability.
 - **Frontend:** Built using React.js, providing a responsive and user-friendly interface.
 - **Wallet Integration:** Implemented using the Wagmi library, supporting various non-custodial wallets.
-- **Blockchain:** The application is powered by the PWR BTC+ chain, ensuring high transaction throughput and minimal latency.
+- **Blockchain:** The application is powered by the BSC testchain, ensuring high transaction throughput and minimal latency.
 - **Storage:** All logos, images, and related assets are securely stored on IPFS, ensuring decentralized and immutable storage.
 
 ## Demo Link - https://youtu.be/O2n-idSakAA
