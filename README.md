@@ -51,7 +51,7 @@ The BQ Protocol is structured around three primary user roles, each interacting 
 - **Blockchain:** The application is powered by the BSC testchain, ensuring high transaction throughput and minimal latency.
 - **Storage:** All logos, images, and related assets are securely stored on IPFS, ensuring decentralized and immutable storage.
 
-## Demo Link - https://youtu.be/O2n-idSakAA
+## Demo Link - https://www.youtube.com/watch?v=9bq0HZK90OY
 
 ## Deployed Contracts
 
